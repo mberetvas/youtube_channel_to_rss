@@ -37,7 +37,16 @@ import pyperclip
 
 
 def get_youtube_source_code(url):
-    """Fetches the source code of a YouTube page."""
+    """
+    Fetches the source code of a YouTube page.
+
+    Args:
+        url (str): The URL of the YouTube page.
+
+    Returns:
+        bytes: The content of the YouTube page if the request is successful.
+        None: If there is an error fetching the URL.
+    """
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()  # Check for bad status codes
@@ -48,7 +57,15 @@ def get_youtube_source_code(url):
 
 
 def get_youtube_channel_id(html_source_code):
-    """Extracts the channel ID from the YouTube source code."""
+    """
+    Extracts the channel ID from the YouTube source code.
+
+    Args:
+        html_source_code (bytes): The HTML source code of the YouTube page.
+
+    Returns:
+        str: The channel ID if found, otherwise None.
+    """
     if html_source_code is None:
         return None
 
@@ -74,14 +91,32 @@ def get_youtube_channel_id(html_source_code):
 
 
 def create_rss_feed_url(cid):
-    """Creates the RSS feed URL from the channel ID."""
+    """
+    Creates the RSS feed URL from the YouTube channel ID.
+
+    Args:
+        cid (str): The YouTube channel ID.
+
+    Returns:
+        str: The RSS feed URL if the channel ID is provided, otherwise None.
+    """
     if cid:
         return f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}"
     return None
 
 
 def fetch_rss_feed_content(feed_url, limit=5):
-    """Fetches and parses the RSS feed content, limited to the latest videos."""
+    """
+    Fetches and parses the RSS feed content, limited to the latest videos.
+
+    Args:
+        feed_url (str): The URL of the RSS feed.
+        limit (int, optional): The maximum number of videos to fetch. Defaults to 5.
+
+    Returns:
+        list: A list of BeautifulSoup 'entry' elements representing the videos if successful.
+        None: If there is an error fetching the RSS feed or parsing the content.
+    """
     try:
         response = requests.get(feed_url, timeout=10)
         response.raise_for_status()
@@ -101,7 +136,17 @@ def fetch_rss_feed_content(feed_url, limit=5):
 
 
 def filter_videos(param_entries, filter_by=None, filter_value=None):
-    """Filters videos by date, title, or other metadata."""
+    """
+    Filters videos by date, title, or other metadata.
+
+    Args:
+        param_entries (list): A list of BeautifulSoup 'entry' elements representing the videos.
+        filter_by (str, optional): The criteria to filter videos by ('date' or 'title'). Defaults to None.
+        filter_value (str, optional): The value to filter videos by. Defaults to None.
+
+    Returns:
+        list: A list of dictionaries containing filtered video details (title, published date, and link).
+    """
     filtered_videos = []
     for entry in param_entries:
         title = entry.find("title").text

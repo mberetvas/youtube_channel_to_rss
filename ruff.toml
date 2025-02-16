@@ -1,7 +1,2 @@
-# Like Black, use double quotes for strings.
-quote-style = "double"
-
 line-length = 100
-
-# Like Black, automatically detect the appropriate line ending.
-line-ending = "auto"
+indent-width = 4
