@@ -16,7 +16,6 @@ def get_youtube_source_code(youtube_url):
         print(f"Error fetching URL: {e}")
         return None
 
-
 def get_youtube_channel_id(source_code):
     """Extracts the channel ID from the YouTube source code."""
     if source_code is None:
@@ -58,7 +57,9 @@ def fetch_rss_feed_content(rss_feed_url, limit=5):
         try:
             soup = BeautifulSoup(response.content, "xml")
         except FeatureNotFound:
-            print("Error: Couldn't find a tree builder with the features you requested: xml. Please install the 'lxml' parser library using 'pip install lxml'.")
+            print(
+                "Error: Couldn't find a tree builder with the features you requested: xml."
+                "Please install the 'lxml' parser library using 'pip install lxml'.")
             return None
         entries = soup.find_all("entry")[:limit]
         return entries
@@ -96,7 +97,10 @@ def filter_videos(entries, filter_by=None, filter_value=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Convert YouTube channel URL to RSS feed URL and fetch latest videos.",
-        epilog="Example usage: python main.py https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw --filter_by date --filter_value 2023-10-01",
+        epilog=
+        "Example usage: "
+        "python main.py https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw"
+        " --filter_by date --filter_value 2023-10-01",
     )
     parser.add_argument("youtube_url", help="The YouTube channel URL")
     parser.add_argument(
