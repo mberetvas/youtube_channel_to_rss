@@ -141,11 +141,11 @@ def filter_videos(param_entries, filter_by=None, filter_value=None):
 
     Args:
         param_entries (list): A list of BeautifulSoup 'entry' elements representing the videos.
-        filter_by (str, optional): The criteria to filter videos by ('date' or 'title'). Defaults to None.
+        filter_by (str, optional): The criteria to filter videos by ('date' or 'title').
         filter_value (str, optional): The value to filter videos by. Defaults to None.
 
     Returns:
-        list: A list of dictionaries containing filtered video details (title, published date, and link).
+        list: A list of dictionaries containing filtered video details.
     """
     filtered_videos = []
     for entry in param_entries:
