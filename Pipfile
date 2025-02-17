@@ -7,6 +7,9 @@ name = "pypi"
 requests = "*"
 beautifulsoup4 = "*"
 pyperclip = "*"
+pytest = "*"
+lxml = "*"
+sphinx = "*"
 
 [dev-packages]
 

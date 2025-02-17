@@ -32,11 +32,11 @@ import re
 import argparse
 from datetime import datetime
 import requests
-from bs4 import BeautifulSoup, FeatureNotFound
+from bs4 import BeautifulSoup, FeatureNotFound, ResultSet, PageElement, Tag, NavigableString
 import pyperclip
 
 
-def get_youtube_source_code(url):
+def get_youtube_source_code(url: str) -> bytes | None:
     """
     Fetches the source code of a YouTube page.
 
@@ -56,7 +56,7 @@ def get_youtube_source_code(url):
         return None
 
 
-def get_youtube_channel_id(html_source_code):
+def get_youtube_channel_id(html_source_code: bytes | None) -> str | None:
     """
     Extracts the channel ID from the YouTube source code.
 
@@ -90,7 +90,7 @@ def get_youtube_channel_id(html_source_code):
     return None
 
 
-def create_rss_feed_url(cid):
+def create_rss_feed_url(cid: str) -> str | None:
     """
     Creates the RSS feed URL from the YouTube channel ID.
 
@@ -105,7 +105,9 @@ def create_rss_feed_url(cid):
     return None
 
 
-def fetch_rss_feed_content(feed_url, limit=5):
+def fetch_rss_feed_content(
+    feed_url: str, limit: int = 5
+) -> ResultSet[PageElement | Tag | NavigableString] | None:
     """
     Fetches and parses the RSS feed content, limited to the latest videos.
 
@@ -135,7 +137,11 @@ def fetch_rss_feed_content(feed_url, limit=5):
         return None
 
 
-def filter_videos(param_entries, filter_by=None, filter_value=None):
+def filter_videos(
+    param_entries: list[BeautifulSoup],
+    filter_by: str | None = None,
+    filter_value: str | None = None,
+) -> list[dict[str, str]]:
     """
     Filters videos by date, title, or other metadata.
 
@@ -160,34 +166,47 @@ def filter_videos(param_entries, filter_by=None, filter_value=None):
                 filtered_videos.append({"title": title, "published": published, "link": link})
         elif filter_by == "title" and filter_value.lower() in title.lower():
             filtered_videos.append({"title": title, "published": published, "link": link})
-        else:
+        elif not filter_by:
             filtered_videos.append({"title": title, "published": published, "link": link})
     return filtered_videos
 
 
 if __name__ == "__main__":
+    # Initialize argument parser with description and example usage
     parser = argparse.ArgumentParser(
         description="Convert YouTube channel URL to RSS feed URL and fetch latest videos.",
         epilog="Example usage: "
         "python main.py https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw"
         " --filter_by date --filter_value 2023-10-01",
     )
+
+    # Add argument for YouTube channel URL
     parser.add_argument("youtube_url", help="The YouTube channel URL")
+
+    # Add optional argument for filtering videos by date or title
     parser.add_argument(
         "--filter_by", choices=["date", "title"], help="Filter videos by date or title"
     )
+
+    # Add optional argument for the value to filter videos by
     parser.add_argument(
         "--filter_value",
         help="Value to filter videos by (e.g., date in YYYY-MM-DD format or title keyword)",
     )
+
+    # Parse command-line arguments
     args = parser.parse_args()
 
+    # Extract YouTube URL from parsed arguments
     youtube_url = args.youtube_url
 
+    # Fetch the source code of the YouTube page
     source_code = get_youtube_source_code(youtube_url)
     if source_code:
+        # Extract the channel ID from the source code
         channel_id = get_youtube_channel_id(source_code)
         if channel_id:
+            # Create the RSS feed URL using the channel ID
             rss_feed_url = create_rss_feed_url(channel_id)
             if rss_feed_url:
                 print(f"Channel ID: {channel_id}")
@@ -195,8 +214,10 @@ if __name__ == "__main__":
                 pyperclip.copy(rss_feed_url)  # Copy RSS feed URL to clipboard
                 print("RSS feed URL has been copied to the clipboard.")
 
+                # Fetch and parse the RSS feed content
                 entries = fetch_rss_feed_content(rss_feed_url)
                 if entries:
+                    # Filter videos based on provided criteria
                     videos = filter_videos(entries, args.filter_by, args.filter_value)
                     for video in videos:
                         print(f"Title: {video['title']}")
