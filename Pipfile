@@ -10,6 +10,7 @@ pyperclip = "*"
 pytest = "*"
 lxml = "*"
 sphinx = "*"
+sphinx-rtd-theme = "*"
 
 [dev-packages]
 
